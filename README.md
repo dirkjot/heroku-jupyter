@@ -1,66 +1,26 @@
-# heroku-jupyter
+# jupyter on PEZ
+
+
+PEZ is the Cloud Foundry instance for Pivots.  If you are not working for
+Pivotal this repository may not help you much.
+
+This repository is a modified version of [Heroku-Jupyter](https://github.com/pl31/heroku-jupyter).
 
 Use this application to deploy [Jupyter Notebook](https://jupyter.org/) to
-heroku or CloudFoundry. If a postgres database is available,
-[pgcontents](https://github.com/quantopian/pgcontents) is used as notebook
-storage.
-
-## Quick start
-
-Jupyter will not start, if the environment variable `JUPYTER_NOTEBOOK_PASSWORD`
-was not set.
-
-If you want to customize your app, easiest is to fork this repository.
+heroku or CloudFoundry. It requires a postgres database which is used as notebook
+storage (see [pgcontents](https://github.com/quantopian/pgcontents)).
 
 ## Installation instructions
 
-### heroku - automatic deployment
+Currently, CloudFoundry has an issue with websockets and passwords, see [this bug](https://github.com/pl31/heroku-jupyter/issues/4).
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+We therefore deploy this notebook _without any security_.  This is
+probably not what you want.  
 
-If you forked this repository, you can link it to your heroku app afterwards.
-
-### heroku - manual deployment
-
-Push this repository to your app or fork this repository on github and link your
-repository to your heroku app.
-
-Use the [heroku-buildpack-conda](https://github.com/pl31/heroku-buildpack-conda):
-```
-$ heroku buildpacks:set https://github.com/pl31/heroku-buildpack-conda.git -a <your_app>
-```
-
-Jupyter notebook will not start until the environment variable
-`JUPYTER_NOTEBOOK_PASSWORD` is set. Use a good password:
-```
-$ heroku config:set JUPYTER_NOTEBOOK_PASSWORD=<your_passwd> -a <your_app>
-```
-
-If you are really sure, that you do not want a password protected notebook
-server, you can set `JUPYTER_NOTEBOOK_PASSWORD_DISABLED` to `DangerZone!`.
-
-### CloudFoundry
-
-- Clone this repository
-- Create a postgres database service with name `jupyter-db`
-- Deploy using `cf push`
-- Set `JUPYTER_NOTEBOOK_PASSWORD` using `cf set-env`. Do not forget to restart application.
-
-## Environment variables
-
-- `JUPYTER_NOTEBOOK_PASSWORD`: Set password for notebooks
-- `JUPYTER_NOTEBOOK_PASSWORD_DISABLED`: Set to `DangerZone!` to disable password
-  protection
-- `JUPYTER_NOTEBOOK_ARGS`: Additional command line args passed to
-  `jupyter notebook`; e.g. get a more verbose logging using `--debug`
-
-## Python version
-
-If you want to use a special python version, you should set it in your environment.yml:
-
-```
-name: root
-dependencies:
-  - python=2.7
-  - ...
-```
+The `push.sh` script will:
+- create a user provided service definition which is essentially a way to provide
+  your postgres details to the Notebook,
+- Push the notebook up to PEZ,
+- Change settings so that it will use 2G of RAM and not use a password,
+- Start the app
+- Display the URL where your notebook lives

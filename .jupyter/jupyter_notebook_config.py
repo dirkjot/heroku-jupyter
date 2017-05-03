@@ -42,7 +42,7 @@ try:
         vcap_application = json.loads(vcap_application_json)
         uri = vcap_application['uris'][0]
         c.NotebookApp.allow_origin = 'https://{}'.format(uri)
-        c.NotebookApp.websocket_url = 'wss://{}:4443'.format(uri)
+        c.NotebookApp.websocket_url = 'ws://{}'.format(uri)
 
 except Exception:
     traceback.print_exc()
